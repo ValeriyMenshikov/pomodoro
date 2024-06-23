@@ -1,15 +1,15 @@
-from typing import Optional
+from typing import (
+    Optional,
+    Any,
+)
 
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import (
     Mapped,
     mapped_column,
-)
-
-from typing import Any
-
-from sqlalchemy.orm import (
     DeclarativeBase,
     declared_attr,
+    relationship,
 )
 
 
@@ -30,8 +30,10 @@ class Task(Base):
     id: Mapped[int] = mapped_column(primary_key=True, nullable=False)
     name: Mapped[str]
     pomodoro_count: Mapped[int]
-    category_id: Mapped[int] = mapped_column(nullable=False)
+    category_id: Mapped[int] = mapped_column(ForeignKey('Categories.id'), nullable=False)
     user_id: Mapped[int] = mapped_column(nullable=False)
+
+    category = relationship("Categories", back_populates="tasks")
 
 
 class Categories(Base):
@@ -40,3 +42,5 @@ class Categories(Base):
     id: Mapped[int] = mapped_column(primary_key=True, nullable=False)
     type: Mapped[Optional[str]]
     name: Mapped[str]
+
+    tasks = relationship("Task", back_populates="category")

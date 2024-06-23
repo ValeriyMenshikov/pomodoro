@@ -1,6 +1,7 @@
 from fastapi import (
     APIRouter,
     Depends,
+    status,
 )
 
 from app.dependency import (
@@ -12,7 +13,7 @@ from app.tasks.repository.task import TaskRepository
 from app.tasks.schema import (
     TaskSchema,
     TasksSchema,
-    TaskCreateSchema,
+    CreateOrUpdateTaskSchema,
 )
 
 router = APIRouter(
@@ -21,10 +22,7 @@ router = APIRouter(
 )
 
 
-@router.get(
-    "",
-    response_model=TasksSchema
-)
+@router.get("", status_code=status.HTTP_200_OK)
 async def get_tasks(
         task_repository: TaskRepository = Depends(get_repository(TaskRepository)),
         task_cache: TaskCache = Depends(task_cache_repository)
@@ -40,41 +38,43 @@ async def get_tasks(
     return result
 
 
-@router.get(
-    "/{task_id}",
-)
+@router.get("/{task_id}", status_code=status.HTTP_200_OK)
 async def get_task(
         task_id: int,
         task_repository: TaskRepository = Depends(get_repository(TaskRepository))
-):
-    task = await task_repository.get_task(task_id=task_id)
-    return task
+) -> TaskSchema:
+    result = await task_repository.get_task(task_id=task_id)
+    return TaskSchema.model_validate(result)
 
 
-@router.put(
-    "/{task_id}",
-    response_model=TaskSchema
-)
+@router.put("/{task_id}", status_code=status.HTTP_200_OK)
 async def update_task(
         task_id: int,
-        task: TaskCreateSchema,
+        task: CreateOrUpdateTaskSchema,
         task_repository: TaskRepository = Depends(get_repository(TaskRepository)),
 ) -> TaskSchema:
-    task = await task_repository.update_task(task=task, task_id=task_id)
-    return TaskSchema.model_validate(task)
+    result = await task_repository.update_task(task=task, task_id=task_id)
+    return TaskSchema.model_validate(result)
 
 
-@router.post(
-    "/task",
-    # response_model=TaskCreateSchema
-)
+@router.post("/task", status_code=status.HTTP_201_CREATED)
 async def create_task(
-        task: TaskCreateSchema,
+        task: CreateOrUpdateTaskSchema,
+        task_repository: TaskRepository = Depends(get_repository(TaskRepository))
+) -> TaskSchema:
+    result = await task_repository.create_task(
+        task=task,
+    )
+    return TaskSchema.model_validate(result)
+
+
+@router.delete("/task", status_code=status.HTTP_204_NO_CONTENT)
+async def create_task(
+        task_id: int,
         user_id: int,
         task_repository: TaskRepository = Depends(get_repository(TaskRepository))
-):
-    task_id = await task_repository.create_task(
-        task,
-        user_id=user_id
+) -> None:
+    await task_repository.delete_task(
+        task_id=task_id,
+        user_id=user_id,
     )
-    return task_id
