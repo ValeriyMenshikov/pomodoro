@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 
-from app.tasks.repository.cache_tasks import TaskCache
-from app.tasks.repository.task import TaskRepository
-from app.tasks.schema import (
+from app.repository.cache_tasks import TaskCache
+from app.repository import TaskRepository
+from app.schemas.task import (
     TasksSchema,
     TaskSchema,
 )

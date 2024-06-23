@@ -1,6 +1,6 @@
 from redis import asyncio as Redis
 import json
-from app.tasks.schema import (
+from app.schemas.task import (
     TaskSchema,
     TasksSchema,
 )

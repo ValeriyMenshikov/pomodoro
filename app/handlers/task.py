@@ -12,8 +12,8 @@ from app.dependency import (
     get_task_service,
 )
 from app.service.task import TaskService
-from app.tasks.repository.task import TaskRepository
-from app.tasks.schema import (
+from app.repository.task import TaskRepository
+from app.schemas.task import (
     TaskSchema,
     TasksSchema,
     CreateOrUpdateTaskSchema,
@@ -21,7 +21,7 @@ from app.tasks.schema import (
 
 router = APIRouter(
     prefix="/tasks",
-    tags=["task"],
+    tags=["Task"],
 )
 
 
