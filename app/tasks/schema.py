@@ -36,5 +36,5 @@ class TasksSchema(BaseModel):
 class CreateOrUpdateTaskSchema(BaseModel):
     name: str = Field(...)
     pomodoro_count: int = Field(...)
-    category_id: int = Field(...)
+    category_id: int = Field(1)
     user_id: int = Field(...)
