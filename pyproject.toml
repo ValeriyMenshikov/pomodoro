@@ -13,6 +13,10 @@ pydantic-settings = "^2.3.3"
 psycopg2-binary = "^2.9.9"
 redis = "^5.0.6"
 uvicorn = "^0.30.1"
+sqlalchemy = "^2.0.31"
+alembic = "^1.13.1"
+asyncpg = "^0.29.0"
+greenlet = "^3.0.3"
 
 
 [build-system]
