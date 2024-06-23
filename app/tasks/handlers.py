@@ -36,7 +36,7 @@ async def get_tasks(
 @router.get("/{task_id}", status_code=status.HTTP_200_OK)
 async def get_task(
         task_id: int,
-        task_repository: TaskRepository = Depends(get_repository(TaskRepository))
+        task_repository: Annotated[TaskRepository, Depends(get_repository(TaskRepository))]
 ) -> TaskSchema:
     result = await task_repository.get_task(task_id=task_id)
     if result:
@@ -48,7 +48,7 @@ async def get_task(
 async def update_task(
         task_id: int,
         task: CreateOrUpdateTaskSchema,
-        task_repository: TaskRepository = Depends(get_repository(TaskRepository)),
+        task_repository: Annotated[TaskRepository, Depends(get_repository(TaskRepository))]
 ) -> TaskSchema:
     result = await task_repository.update_task(task=task, task_id=task_id)
     if result:
@@ -59,7 +59,7 @@ async def update_task(
 @router.post("/task", status_code=status.HTTP_201_CREATED)
 async def create_task(
         task: CreateOrUpdateTaskSchema,
-        task_repository: TaskRepository = Depends(get_repository(TaskRepository))
+        task_repository: Annotated[TaskRepository, Depends(get_repository(TaskRepository))]
 ) -> TaskSchema:
     result = await task_repository.create_task(
         task=task,
@@ -71,7 +71,7 @@ async def create_task(
 async def delete_task(
         task_id: int,
         user_id: int,
-        task_repository: TaskRepository = Depends(get_repository(TaskRepository))
+        task_repository: Annotated[TaskRepository, Depends(get_repository(TaskRepository))]
 ) -> None:
     await task_repository.delete_task(
         task_id=task_id,
