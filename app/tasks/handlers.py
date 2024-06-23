@@ -1,3 +1,5 @@
+from typing import Annotated
+
 from fastapi import (
     APIRouter,
     Depends,
@@ -7,9 +9,9 @@ from fastapi import (
 
 from app.dependency import (
     get_repository,
-    task_cache_repository,
+    get_task_service,
 )
-from app.tasks.repository.cache_tasks import TaskCache
+from app.service.task import TaskService
 from app.tasks.repository.task import TaskRepository
 from app.tasks.schema import (
     TaskSchema,
@@ -25,17 +27,9 @@ router = APIRouter(
 
 @router.get("", status_code=status.HTTP_200_OK)
 async def get_tasks(
-        task_repository: TaskRepository = Depends(get_repository(TaskRepository)),
-        task_cache: TaskCache = Depends(task_cache_repository)
+        task_service: Annotated[TaskService, Depends(get_task_service)],
 ) -> TasksSchema:
-    tasks_list = await task_cache.get_tasks()
-    if tasks_list.tasks:
-        return tasks_list
-
-    tasks = await task_repository.get_tasks()
-    tasks_schema = TasksSchema(tasks=[TaskSchema.model_validate(task) for task in tasks])
-    await task_cache.set_tasks(tasks_schema)
-    result = await task_cache.get_tasks()
+    result = await task_service.get_tasks()
     return result
 
 
