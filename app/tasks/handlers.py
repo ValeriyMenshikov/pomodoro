@@ -2,6 +2,7 @@ from fastapi import (
     APIRouter,
     Depends,
     status,
+    HTTPException,
 )
 
 from app.dependency import (
@@ -44,7 +45,9 @@ async def get_task(
         task_repository: TaskRepository = Depends(get_repository(TaskRepository))
 ) -> TaskSchema:
     result = await task_repository.get_task(task_id=task_id)
-    return TaskSchema.model_validate(result)
+    if result:
+        return TaskSchema.model_validate(result)
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
 
 @router.put("/{task_id}", status_code=status.HTTP_200_OK)
@@ -54,7 +57,9 @@ async def update_task(
         task_repository: TaskRepository = Depends(get_repository(TaskRepository)),
 ) -> TaskSchema:
     result = await task_repository.update_task(task=task, task_id=task_id)
-    return TaskSchema.model_validate(result)
+    if result:
+        return TaskSchema.model_validate(result)
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
 
 @router.post("/task", status_code=status.HTTP_201_CREATED)
@@ -69,7 +74,7 @@ async def create_task(
 
 
 @router.delete("/task", status_code=status.HTTP_204_NO_CONTENT)
-async def create_task(
+async def delete_task(
         task_id: int,
         user_id: int,
         task_repository: TaskRepository = Depends(get_repository(TaskRepository))
