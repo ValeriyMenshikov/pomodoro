@@ -20,6 +20,7 @@ class TaskSchema(BaseModel):
     name: str = Field(...)
     pomodoro_count: int = Field(...)
     category_id: int = Field(...)
+    user_id: int = Field(...)
 
     @model_validator(mode="after")
     def check_name_or_pomodoro_count_is_not_none(self):
@@ -36,3 +37,4 @@ class TaskCreateSchema(BaseModel):
     name: str = Field(...)
     pomodoro_count: int = Field(default=1)
     category_id: CategoryEnum = Field(default=CategoryEnum.other)
+    user_id: CategoryEnum = Field(default=CategoryEnum.other)

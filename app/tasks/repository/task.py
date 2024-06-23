@@ -6,7 +6,7 @@ from sqlalchemy import (
 )
 from app.infrastructure.database.base_repositoty import BaseRepository
 from app.tasks.models import (
-    Tasks,
+    Task,
     Categories,
 )
 from app.tasks.schema import TaskCreateSchema
@@ -14,41 +14,45 @@ from app.tasks.schema import TaskCreateSchema
 
 class TaskRepository(BaseRepository):
 
-    async def get_tasks(self) -> list[Tasks]:
-        task: list[Tasks] = (await self.execute(select(Tasks))).scalars().all()
+    async def get_tasks(self) -> list[Task]:
+        task: list[Task] = (await self.execute(select(Task))).scalars().all()
         return task
 
-    async def get_task(self, task_id: int) -> Tasks | None:
-        task: Tasks = (await self.execute(select(Tasks).where(Tasks.id == task_id))).scalar_one_or_none()
+    async def get_task(self, task_id: int) -> Task | None:
+        task: Task = (await self.execute(select(Task).where(Task.id == task_id))).scalar_one_or_none()
         return task
 
-    async def get_user_task(self, task_id: int, user_id: int) -> Tasks | None:
-        query = select(Tasks).where(Tasks.id == task_id, Tasks.user_id == user_id)
-        task: Tasks = (await self.execute(query)).scalar_one_or_none()
+    async def get_user_task(self, task_id: int, user_id: int) -> Task | None:
+        query = select(Task).where(Task.id == task_id, Task.user_id == user_id)
+        task: Task = (await self.execute(query)).scalar_one_or_none()
         return task
 
     async def create_task(self, task: TaskCreateSchema, user_id: int) -> int:
-        query = insert(Tasks).values(
+        query = insert(Task).values(
             name=task.name,
             pomodoro_count=task.pomodoro_count,
             category_id=task.category_id,
             user_id=user_id
-        ).returning(Tasks.id)
+        ).returning(Task.id)
         task_id = (await self.execute(query)).scalar_one_or_none()
         return task_id
 
     async def delete_task(self, task_id: int, user_id: int) -> None:
-        query = delete(Tasks).where(Tasks.id == task_id, Tasks.user_id == user_id)
+        query = delete(Task).where(Task.id == task_id, Task.user_id == user_id)
         await self.execute(query)
 
-    async def get_task_by_category_name(self, category_name: str) -> list[Tasks]:
-        query = select(Tasks).join(Categories, Tasks.category_id == Categories.id).where(
+    async def get_task_by_category_name(self, category_name: str) -> list[Task]:
+        query = select(Task).join(Categories, Task.category_id == Categories.id).where(
             Categories.name == category_name
         )
-        task: list[Tasks] = (await self.execute(query)).scalars().all()
+        task: list[Task] = (await self.execute(query)).scalars().all()
         return task
 
-    async def update_task_name(self, task_id: int, name: str) -> Tasks:
-        query = update(Tasks).where(Tasks.id == task_id).values(name=name).returning(Tasks.id)
-        task_id: int = (await self.execute(query)).scalar_one_or_none()
-        return await self.get_task(task_id)
+    async def update_task(self, task: TaskCreateSchema, task_id: int) -> Task:
+        query = update(Task).where(Task.id == task_id).values(
+            name=task.name,
+            pomodoro_count=task.pomodoro_count,
+            category_id=task.category_id
+        ).returning(Task)
+        result = (await self.execute(query)).fetchone()[0]
+        return result

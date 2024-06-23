@@ -24,7 +24,7 @@ class Base(DeclarativeBase):
         return self.__name__.lower()
 
 
-class Tasks(Base):
+class Task(Base):
     __tablename__ = "Tasks"
 
     id: Mapped[int] = mapped_column(primary_key=True, nullable=False)

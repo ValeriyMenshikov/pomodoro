@@ -3,7 +3,11 @@ from fastapi import (
     Depends,
 )
 
-from app.infrastructure.database import get_repository
+from app.dependency import (
+    get_repository,
+    task_cache_repository,
+)
+from app.tasks.repository.cache_tasks import TaskCache
 from app.tasks.repository.task import TaskRepository
 from app.tasks.schema import (
     TaskSchema,
@@ -19,13 +23,21 @@ router = APIRouter(
 
 @router.get(
     "",
-    # response_model=TasksSchema
+    response_model=TasksSchema
 )
 async def get_tasks(
-        task_repository: TaskRepository = Depends(get_repository(TaskRepository))
-):
+        task_repository: TaskRepository = Depends(get_repository(TaskRepository)),
+        task_cache: TaskCache = Depends(task_cache_repository)
+) -> TasksSchema:
+    tasks_list = await task_cache.get_tasks()
+    if tasks_list.tasks:
+        return tasks_list
+
     tasks = await task_repository.get_tasks()
-    return tasks
+    tasks_schema = TasksSchema(tasks=[TaskSchema.model_validate(task) for task in tasks])
+    await task_cache.set_tasks(tasks_schema)
+    result = await task_cache.get_tasks()
+    return result
 
 
 @router.get(
@@ -41,10 +53,15 @@ async def get_task(
 
 @router.put(
     "/{task_id}",
-    response_model=TaskCreateSchema
+    response_model=TaskSchema
 )
-async def update_task(task: TaskCreateSchema) -> TaskCreateSchema:
-    return TaskCreateSchema
+async def update_task(
+        task_id: int,
+        task: TaskCreateSchema,
+        task_repository: TaskRepository = Depends(get_repository(TaskRepository)),
+) -> TaskSchema:
+    task = await task_repository.update_task(task=task, task_id=task_id)
+    return TaskSchema.model_validate(task)
 
 
 @router.post(
