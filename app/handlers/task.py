@@ -10,7 +10,9 @@ from fastapi import (
 from app.dependency import (
     get_repository,
     get_task_service,
+    get_request_user_id,
 )
+from app.exception import TaskNotFound
 from app.service.task import TaskService
 from app.repository.task import TaskRepository
 from app.schemas.task import (
@@ -48,32 +50,38 @@ async def get_task(
 async def update_task(
         task_id: int,
         task: CreateOrUpdateTaskSchema,
-        task_repository: Annotated[TaskRepository, Depends(get_repository(TaskRepository))]
+        task_service: Annotated[TaskService, Depends(get_task_service)],
+        user_id: int = Depends(get_request_user_id),
 ) -> TaskSchema:
-    result = await task_repository.update_task(task=task, task_id=task_id)
-    if result:
-        return TaskSchema.model_validate(result)
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    try:
+        return await task_service.update_task(task=task, task_id=task_id, user_id=user_id)
+    except TaskNotFound as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e.details)
 
 
 @router.post("/task", status_code=status.HTTP_201_CREATED)
 async def create_task(
         task: CreateOrUpdateTaskSchema,
-        task_repository: Annotated[TaskRepository, Depends(get_repository(TaskRepository))]
+        task_service: Annotated[TaskService, Depends(get_task_service)],
+        user_id: int = Depends(get_request_user_id),
 ) -> TaskSchema:
-    result = await task_repository.create_task(
+    result = await task_service.create_task(
         task=task,
+        user_id=user_id
     )
-    return TaskSchema.model_validate(result)
+    return result
 
 
 @router.delete("/task", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_task(
         task_id: int,
-        user_id: int,
-        task_repository: Annotated[TaskRepository, Depends(get_repository(TaskRepository))]
+        task_service: Annotated[TaskService, Depends(get_task_service)],
+        user_id: int = Depends(get_request_user_id),
 ) -> None:
-    await task_repository.delete_task(
-        task_id=task_id,
-        user_id=user_id,
-    )
+    try:
+        await task_service.delete_task(
+            task_id=task_id,
+            user_id=user_id,
+        )
+    except TaskNotFound as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e.details)

@@ -18,7 +18,7 @@ class Task(Base):
     name: Mapped[str]
     pomodoro_count: Mapped[int]
     category_id: Mapped[int] = mapped_column(ForeignKey('Categories.id'), nullable=False)
-    user_id: Mapped[int] = mapped_column(nullable=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey('UserProfile.id'), nullable=False)
 
     category = relationship("Categories", back_populates="tasks")
 
