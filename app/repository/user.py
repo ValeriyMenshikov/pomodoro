@@ -9,11 +9,10 @@ from app.models import UserProfile
 
 class UserRepository(BaseRepository):
 
-    async def create_user(self, user_name: str, password: str, access_token: str) -> UserProfile:
+    async def create_user(self, user_name: str, password: str) -> UserProfile:
         query = insert(UserProfile).values(
             username=user_name,
             password=password,
-            access_token=access_token
         ).returning(UserProfile)
         result = await self.execute(query)
         return result.scalar_one_or_none()

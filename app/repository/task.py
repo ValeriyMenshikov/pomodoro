@@ -35,12 +35,12 @@ class TaskRepository(BaseRepository):
         task: Task = (await self.execute(query)).scalar_one_or_none()
         return task
 
-    async def create_task(self, task: CreateOrUpdateTaskSchema) -> Task:
+    async def create_task(self, task: CreateOrUpdateTaskSchema, user_id: int) -> Task:
         query = insert(Task).values(
             name=task.name,
             pomodoro_count=task.pomodoro_count,
             category_id=task.category_id,
-            user_id=task.user_id
+            user_id=user_id
         ).returning(Task)
         result = (await self.execute(query)).scalar_one_or_none()
         return result
@@ -62,8 +62,11 @@ class TaskRepository(BaseRepository):
         task: list[Task] = (await self.execute(query)).scalars().all()
         return task
 
-    async def update_task(self, task: CreateOrUpdateTaskSchema, task_id: int) -> Task:
-        query = update(Task).where(Task.id == task_id).values(
+    async def update_task(self, task: CreateOrUpdateTaskSchema, task_id: int, user_id: int) -> Task:
+        query = update(Task).where(
+            Task.id == task_id,
+            Task.user_id == user_id
+        ).values(
             name=task.name,
             pomodoro_count=task.pomodoro_count,
             category_id=task.category_id
