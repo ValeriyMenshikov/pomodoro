@@ -13,7 +13,15 @@ class Settings(BaseSettings):
     CACHE_DB: int = 0
     JWT_SECRET: str = 'secret'
     JWT_ENCODING_ALGORITHM: str = 'HS256'
+    GOOGLE_CLIENT_ID: str = ""
+    GOOGLE_CLIENT_SECRET: str = ""
+    GOOGLE_REDIRECT_URL: str = ""
+    GOOGLE_TOKEN_URL: str = "https://oauth2.googleapis.com/token"
 
     @property
     def db_url(self):
         return f'{self.DB_DRIVER}://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}'
+
+    @property
+    def google_redirect_url(self):
+        return f"https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id={self.GOOGLE_CLIENT_ID}&redirect_uri={self.GOOGLE_REDIRECT_URL}&scope=openid%20profile%20email&access_type=offline"
