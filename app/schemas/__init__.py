@@ -7,6 +7,7 @@ from app.schemas.user import (
     UserLoginSchema,
     UserCreateSchema,
 )
+from app.schemas.auth import GoogleUserData, YandexUserData
 
 __all__ = [
     'CreateOrUpdateTaskSchema',
@@ -14,4 +15,6 @@ __all__ = [
     'TasksSchema',
     'UserLoginSchema',
     'UserCreateSchema',
+    'GoogleUserData',
+    'YandexUserData',
 ]

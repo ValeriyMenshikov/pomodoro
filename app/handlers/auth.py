@@ -3,15 +3,20 @@ from typing import Annotated
 from fastapi import (
     APIRouter,
     Depends,
-HTTPException,
+    HTTPException,
+
 )
+from fastapi.responses import RedirectResponse
 
 from app.dependency import get_auth_service
 from app.exception import (
     UserNotFoundException,
     UserNotCorrectPasswordException,
 )
-from app.schemas import UserCreateSchema, UserLoginSchema
+from app.schemas import (
+    UserCreateSchema,
+    UserLoginSchema,
+)
 from app.service import AuthService
 
 router = APIRouter(
@@ -32,3 +37,38 @@ async def login(
     except UserNotCorrectPasswordException as e:
         raise HTTPException(status_code=401, detail=e.details)
     return user_data
+
+
+@router.get("/login/google")
+async def login_google(
+        auth_service: Annotated[AuthService, Depends(get_auth_service)],
+) -> RedirectResponse:
+    redirect_url = await auth_service.get_google_redirect_url()
+    print(redirect_url)
+    return RedirectResponse(redirect_url)
+
+
+@router.get("/google")
+async def auth_google(
+        auth_service: Annotated[AuthService, Depends(get_auth_service)],
+        code: str
+) -> RedirectResponse:
+    return await auth_service.google_auth(code)
+
+
+@router.get("/login/yandex", response_class=RedirectResponse)
+async def login_yandex(
+        auth_service: Annotated[AuthService, Depends(get_auth_service)],
+) -> RedirectResponse:
+    redirect_url = await auth_service.get_yandex_redirect_url()
+    print(redirect_url)
+    return RedirectResponse(redirect_url)
+
+
+@router.get("/yandex")
+async def auth_yandex(
+        auth_service: Annotated[AuthService, Depends(get_auth_service)],
+        code: str
+) -> RedirectResponse:
+    print('1111111111')
+    return await auth_service.yandex_auth(code)

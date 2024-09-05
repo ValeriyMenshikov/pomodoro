@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := help
 
 run: ## Run the application using uvicorn with provided arguments or defaults
-	uvicorn app.main:app --host 0.0.0.0 --port 8081 --reload
+	uvicorn app.main:app --host 0.0.0.0 --port 8081 --reload --env-file .local.env
 
 
 migrate-create:

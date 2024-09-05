@@ -8,6 +8,7 @@ from fastapi import (
     HTTPException,
 )
 
+from app.clients import GoogleClient, YandexClient
 from app.exception import (
     TokenExpired,
     TokenNotCorrect,
@@ -50,12 +51,24 @@ async def get_task_service(
     return TaskService(task_repository=task_repository, task_cache=cache_repository)
 
 
+async def get_google_client() -> GoogleClient:
+    return GoogleClient(settings=Settings())
+
+
+async def get_yandex_client() -> YandexClient:
+    return YandexClient(settings=Settings())
+
+
 async def get_auth_service(
         user_repository: Annotated[UserRepository, Depends(get_repository(UserRepository))],
+        google_client: Annotated[GoogleClient, Depends(get_google_client)],
+        yandex_client: Annotated[YandexClient, Depends(get_yandex_client)],
 ) -> AuthService:
     return AuthService(
         user_repository=user_repository,
-        settings=Settings()
+        google_client=google_client,
+        yandex_client=yandex_client,
+        settings=Settings(),
     )
 
 
