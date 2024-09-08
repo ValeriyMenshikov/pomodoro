@@ -13,11 +13,11 @@ from app.exception import (
     UserNotFoundException,
     UserNotCorrectPasswordException,
 )
-from app.schemas import (
-    UserCreateSchema,
-    UserLoginSchema,
+from app.users.user_profile.schema import (
+    UserCreateSchema
 )
-from app.service import AuthService
+from app.users.auth.schema import UserLoginSchema
+from app.users.auth.service import AuthService
 
 router = APIRouter(
     prefix="/auth",
@@ -70,5 +70,4 @@ async def auth_yandex(
         auth_service: Annotated[AuthService, Depends(get_auth_service)],
         code: str
 ) -> RedirectResponse:
-    print('1111111111')
     return await auth_service.yandex_auth(code)

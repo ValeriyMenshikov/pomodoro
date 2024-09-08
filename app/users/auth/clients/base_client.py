@@ -7,7 +7,7 @@ import structlog
 import uuid
 from curlify2 import Curlify
 
-from app.clients.configuration import Configuration
+from app.users.auth.clients.configuration import Configuration
 
 
 class BaseClient:

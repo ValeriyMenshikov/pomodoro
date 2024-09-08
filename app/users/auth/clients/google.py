@@ -2,10 +2,10 @@ from dataclasses import dataclass
 
 import structlog
 
-from app.clients.base_client import BaseClient
-from app.clients.configuration import Configuration
+from app.users.auth.clients.base_client import BaseClient
+from app.users.auth.clients.configuration import Configuration
 from app.settings import Settings
-from app.schemas.auth import GoogleUserData
+from app.users.auth.schema import GoogleUserData
 
 structlog.configure(
     processors=[
@@ -33,7 +33,6 @@ class GoogleClient:
         return GoogleUserData(**user_info.json(), google_access_token=access_token)
 
     async def _get_access_token(self, code: str) -> str:
-        print('44444444')
         data = {
             'code': code,
             'client_id': self.settings.GOOGLE_CLIENT_ID,

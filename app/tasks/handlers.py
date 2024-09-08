@@ -13,9 +13,9 @@ from app.dependency import (
     get_request_user_id,
 )
 from app.exception import TaskNotFound
-from app.service.task import TaskService
-from app.repository.task import TaskRepository
-from app.schemas.task import (
+from app.tasks.service import TaskService
+from app.tasks.repository.task import TaskRepository
+from app.tasks.schema import (
     TaskSchema,
     TasksSchema,
     CreateOrUpdateTaskSchema,

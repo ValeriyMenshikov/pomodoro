@@ -4,7 +4,7 @@ from sqlalchemy import (
 )
 
 from app.infrastructure.database import BaseRepository
-from app.models import UserProfile
+from app.users.user_profile.models import UserProfile
 
 
 class UserRepository(BaseRepository):

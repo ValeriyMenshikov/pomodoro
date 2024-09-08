@@ -5,11 +5,13 @@ from fastapi import (
     Depends,
 )
 
-from app.schemas import (
-    UserLoginSchema,
+from app.users.user_profile.schema import (
     UserCreateSchema,
 )
-from app.service.user import UserService
+from app.users.auth.schema import (
+    UserLoginSchema
+)
+from app.users.user_profile.service import UserService
 from app.dependency import get_user_service
 
 router = APIRouter(
