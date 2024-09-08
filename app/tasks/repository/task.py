@@ -5,11 +5,11 @@ from sqlalchemy import (
     insert,
 )
 from app.infrastructure.database.base_repositoty import BaseRepository
-from app.models import (
+from app.tasks.models import (
     Task,
     Categories,
 )
-from app.schemas.task import (
+from app.tasks.schema import (
     CreateOrUpdateTaskSchema,
 )
 

@@ -2,9 +2,9 @@ from dataclasses import dataclass
 
 import structlog
 
-from app.clients.base_client import BaseClient
-from app.clients.configuration import Configuration
-from app.schemas import YandexUserData
+from app.users.auth.clients.base_client import BaseClient
+from app.users.auth.clients.configuration import Configuration
+from app.users.auth.schema import YandexUserData
 from app.settings import Settings
 
 structlog.configure(
