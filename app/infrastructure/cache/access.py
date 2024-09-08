@@ -2,7 +2,7 @@ from redis import asyncio as redis
 from app.settings import Settings
 
 
-def get_redis_connection() -> redis.Redis:
+async def get_redis_connection() -> redis.Redis:
     settings = Settings()
     return redis.Redis(
         host=settings.CACHE_HOST,

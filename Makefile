@@ -3,6 +3,8 @@
 run: ## Run the application using uvicorn with provided arguments or defaults
 	uvicorn app.main:app --host 0.0.0.0 --port 8081 --reload --env-file .local.env
 
+grun: ## Run the application using uvicorn with provided arguments or defaults
+	gunicorn app.main:app -c gunicorn.conf.py
 
 migrate-create:
 	alembic revision --autogenerate -m $(MIGRATION)
