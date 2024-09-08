@@ -16,3 +16,5 @@ class TokenNotCorrect(Exception):
 
 class TaskNotFound(Exception):
     details = "Task not found"
+
+

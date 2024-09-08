@@ -2,6 +2,8 @@ import datetime as dt
 from datetime import timedelta
 from dataclasses import dataclass
 from jose import jwt
+
+from app.clients import GoogleClient, YandexClient
 from app.exception import (
     UserNotFoundException,
     UserNotCorrectPasswordException,
@@ -10,7 +12,10 @@ from app.exception import (
 )
 from app.models import UserProfile
 from app.repository import UserRepository
-from app.schemas import UserLoginSchema
+from app.schemas import (
+    UserLoginSchema,
+    UserCreateSchema,
+)
 from app.settings import Settings
 
 
@@ -18,12 +23,30 @@ from app.settings import Settings
 class AuthService:
     user_repository: UserRepository
     settings: Settings
+    google_client: GoogleClient
+    yandex_client: YandexClient
 
     async def login(self, user_name: str, password: str) -> UserLoginSchema:
         user: UserProfile = await self.user_repository.get_user_by_username(user_name)
         self._validate_auth_user(user=user, password=password)
         access_token = await self.generate_access_token(user_id=user.id)
         return UserLoginSchema(user_id=user.id, access_token=access_token)
+
+    async def google_auth(self, code: str) -> UserLoginSchema:
+        user_data = await self.google_client.get_user_info(code=code)
+        user = await self.user_repository.get_user_by_email(email=user_data.email)
+        if user:
+            access_token = await self.generate_access_token(user_id=user.id)
+            return UserLoginSchema(user_id=user.id, access_token=access_token)
+
+        create_user_data = UserCreateSchema(
+            google_access_token=user_data.google_access_token,
+            email=user_data.email,
+            name=user_data.name,
+        )
+        created_user = await self.user_repository.create_user(create_user_data)
+        access_token = await self.generate_access_token(user_id=created_user.id)
+        return UserLoginSchema(user_id=created_user.id, access_token=access_token)
 
     @staticmethod
     def _validate_auth_user(user: UserProfile, password: str):
@@ -57,3 +80,25 @@ class AuthService:
         if payload['expire'] < dt.datetime.utcnow().timestamp():
             raise TokenExpired
         return payload['user_id']
+
+    async def get_google_redirect_url(self) -> str:
+        return self.settings.google_redirect_url
+
+    async def get_yandex_redirect_url(self) -> str:
+        return self.settings.yandex_redirect_url
+
+    async def yandex_auth(self, code: str) -> UserLoginSchema:
+        user_data = await self.yandex_client.get_user_info(code=code)
+        user = await self.user_repository.get_user_by_email(email=user_data.default_email)
+        if user:
+            access_token = await self.generate_access_token(user_id=user.id)
+            return UserLoginSchema(user_id=user.id, access_token=access_token)
+
+        create_user_data = UserCreateSchema(
+            yandex_access_token=user_data.access_token,
+            email=user_data.default_email,
+            name=user_data.name,
+        )
+        created_user = await self.user_repository.create_user(create_user_data)
+        access_token = await self.generate_access_token(user_id=created_user.id)
+        return UserLoginSchema(user_id=created_user.id, access_token=access_token)
