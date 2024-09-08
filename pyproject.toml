@@ -18,6 +18,8 @@ alembic = "^1.13.1"
 asyncpg = "^0.29.0"
 greenlet = "^3.0.3"
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+gunicorn = "^23.0.0"
+uvicorn-worker = "^0.2.0"
 
 
 [build-system]
