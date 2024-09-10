@@ -326,6 +326,38 @@ dnspython = ">=2.0.0"
 idna = ">=2.0.0"
 
 [[package]]
+name = "factory-boy"
+version = "3.3.1"
+description = "A versatile test fixtures replacement based on thoughtbot's factory_bot for Ruby."
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "factory_boy-3.3.1-py2.py3-none-any.whl", hash = "sha256:7b1113c49736e1e9995bc2a18f4dbf2c52cf0f841103517010b1d825712ce3ca"},
+    {file = "factory_boy-3.3.1.tar.gz", hash = "sha256:8317aa5289cdfc45f9cae570feb07a6177316c82e34d14df3c2e1f22f26abef0"},
+]
+
+[package.dependencies]
+Faker = ">=0.7.0"
+
+[package.extras]
+dev = ["Django", "Pillow", "SQLAlchemy", "coverage", "flake8", "isort", "mongoengine", "mongomock", "mypy", "tox", "wheel (>=0.32.0)", "zest.releaser[recommended]"]
+doc = ["Sphinx", "sphinx-rtd-theme", "sphinxcontrib-spelling"]
+
+[[package]]
+name = "faker"
+version = "28.4.1"
+description = "Faker is a Python package that generates fake data for you."
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "Faker-28.4.1-py3-none-any.whl", hash = "sha256:e59c01d1e8b8e20a83255ab8232c143cb2af3b4f5ab6a3f5ce495f385ad8ab4c"},
+    {file = "faker-28.4.1.tar.gz", hash = "sha256:4294d169255a045990720d6f3fa4134b764a4cdf46ef0d3c7553d2506f1adaa1"},
+]
+
+[package.dependencies]
+python-dateutil = ">=2.4"
+
+[[package]]
 name = "fastapi"
 version = "0.111.0"
 description = "FastAPI framework, high performance, easy to learn, fast to code, ready for production"
@@ -577,6 +609,28 @@ files = [
 ]
 
 [[package]]
+name = "inflection"
+version = "0.5.1"
+description = "A port of Ruby on Rails inflector to Python"
+optional = false
+python-versions = ">=3.5"
+files = [
+    {file = "inflection-0.5.1-py2.py3-none-any.whl", hash = "sha256:f38b2b640938a4f35ade69ac3d053042959b62a0f1076a5bbaa1b9526605a8a2"},
+    {file = "inflection-0.5.1.tar.gz", hash = "sha256:1a29730d366e996aaacffb2f1f1cb9593dc38e2ddd30c91250c6dde09ea9b417"},
+]
+
+[[package]]
+name = "iniconfig"
+version = "2.0.0"
+description = "brain-dead simple config-ini parsing"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "iniconfig-2.0.0-py3-none-any.whl", hash = "sha256:b6a85871a79d2e3b22d2d1b94ac2824226a63c6b741c88f7ae975f18b6778374"},
+    {file = "iniconfig-2.0.0.tar.gz", hash = "sha256:2d91e135bf72d31a410b17c16da610a82cb55f6b0477d1a902134b24a455b8b3"},
+]
+
+[[package]]
 name = "jinja2"
 version = "3.1.4"
 description = "A very fast and expressive template engine."
@@ -781,6 +835,21 @@ files = [
     {file = "packaging-24.1-py3-none-any.whl", hash = "sha256:5b8f2217dbdbd2f7f384c41c628544e6d52f2d0f53c6d0c3ea61aa5d1d7ff124"},
     {file = "packaging-24.1.tar.gz", hash = "sha256:026ed72c8ed3fcce5bf8950572258698927fd1dbda10a5e981cdf0ac37f4f002"},
 ]
+
+[[package]]
+name = "pluggy"
+version = "1.5.0"
+description = "plugin and hook calling mechanisms for python"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "pluggy-1.5.0-py3-none-any.whl", hash = "sha256:44e1ad92c8ca002de6377e165f3e0f1be63266ab4d554740532335b9d75ea669"},
+    {file = "pluggy-1.5.0.tar.gz", hash = "sha256:2cffa88e94fdc978c4c574f15f9e59b7f4201d439195c3715ca9e2486f1d0cf1"},
+]
+
+[package.extras]
+dev = ["pre-commit", "tox"]
+testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
 name = "psycopg2-binary"
@@ -1027,6 +1096,76 @@ files = [
 
 [package.extras]
 windows-terminal = ["colorama (>=0.4.6)"]
+
+[[package]]
+name = "pytest"
+version = "8.3.3"
+description = "pytest: simple powerful testing with Python"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "pytest-8.3.3-py3-none-any.whl", hash = "sha256:a6853c7375b2663155079443d2e45de913a911a11d669df02a50814944db57b2"},
+    {file = "pytest-8.3.3.tar.gz", hash = "sha256:70b98107bd648308a7952b06e6ca9a50bc660be218d53c257cc1fc94fda10181"},
+]
+
+[package.dependencies]
+colorama = {version = "*", markers = "sys_platform == \"win32\""}
+iniconfig = "*"
+packaging = "*"
+pluggy = ">=1.5,<2"
+
+[package.extras]
+dev = ["argcomplete", "attrs (>=19.2)", "hypothesis (>=3.56)", "mock", "pygments (>=2.7.2)", "requests", "setuptools", "xmlschema"]
+
+[[package]]
+name = "pytest-asyncio"
+version = "0.24.0"
+description = "Pytest support for asyncio"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "pytest_asyncio-0.24.0-py3-none-any.whl", hash = "sha256:a811296ed596b69bf0b6f3dc40f83bcaf341b155a269052d82efa2b25ac7037b"},
+    {file = "pytest_asyncio-0.24.0.tar.gz", hash = "sha256:d081d828e576d85f875399194281e92bf8a68d60d72d1a2faf2feddb6c46b276"},
+]
+
+[package.dependencies]
+pytest = ">=8.2,<9"
+
+[package.extras]
+docs = ["sphinx (>=5.3)", "sphinx-rtd-theme (>=1.0)"]
+testing = ["coverage (>=6.2)", "hypothesis (>=5.7.1)"]
+
+[[package]]
+name = "pytest-factoryboy"
+version = "2.7.0"
+description = "Factory Boy support for pytest."
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "pytest_factoryboy-2.7.0-py3-none-any.whl", hash = "sha256:bf3222db22d954fbf46f4bff902a0a8d82f3fc3594a47c04bbdc0546ff4c59a6"},
+    {file = "pytest_factoryboy-2.7.0.tar.gz", hash = "sha256:67fc54ec8669a3feb8ac60094dd57cd71eb0b20b2c319d2957873674c776a77b"},
+]
+
+[package.dependencies]
+factory_boy = ">=2.10.0"
+inflection = "*"
+packaging = "*"
+pytest = ">=6.2"
+typing_extensions = "*"
+
+[[package]]
+name = "python-dateutil"
+version = "2.9.0.post0"
+description = "Extensions to the standard Python datetime module"
+optional = false
+python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
+files = [
+    {file = "python-dateutil-2.9.0.post0.tar.gz", hash = "sha256:37dd54208da7e1cd875388217d5e00ebd4179249f90fb72437e91a35459a0ad3"},
+    {file = "python_dateutil-2.9.0.post0-py2.py3-none-any.whl", hash = "sha256:a8b2bc7bffae282281c8140a97d3aa9c14da0b136dfe83f850eea9a5f7470427"},
+]
+
+[package.dependencies]
+six = ">=1.5"
 
 [[package]]
 name = "python-dotenv"
@@ -1695,4 +1834,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "3ec86c75120ab363a52895b8befd15e36c9e689d72ebcb194d7008e60e076bd6"
+content-hash = "47480b9fd68f718052812d9b4a0c86de226f96d262d97ac1f55e465b9c2b3809"
