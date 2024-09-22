@@ -12,6 +12,11 @@ migrate-create:
 migrate-apply:
 	alembic upgrade head
 
+# celery -A worker.celery worker --loglevel=info
+# celery --broker=redis://localhost:6379/1 flower --port=5555
+
+
+
 help: ## Show this help message
 	@echo "Usage: make [command]"
 	@echo ""

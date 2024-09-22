@@ -22,6 +22,7 @@ from app.tasks.repository import (
 from app.tasks.service import (
     TaskService,
 )
+from app.users.auth.clients.mail import MailClient
 from app.users.user_profile.repository import UserRepository
 from app.users.user_profile.service import UserService
 from app.users.auth.service import AuthService
@@ -68,6 +69,7 @@ async def get_auth_service(
         user_repository=user_repository,
         google_client=google_client,
         yandex_client=yandex_client,
+        mail_client=MailClient(),
         settings=Settings(),
     )
 
