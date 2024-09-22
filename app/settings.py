@@ -22,9 +22,10 @@ class Settings(BaseSettings):
     YANDEX_REDIRECT_URI: str = ""
     YANDEX_TOKEN_URL: str = "https://oauth.yandex.ru/token"
     CELERY_REDIS_URL: str = "redis://localhost:6379/1"
-    MAIL_FROM: str = "no-reply@fitra.live"
-    SMTP_HOST: str = "smtp.yandex.run"
-    SMTP_PORT: int = 465
+    CELERY_RABBIT_URL: str = 'amqp://guest:guest@localhost:5672//'
+    MAIL_FROM: str = "no-reply@pomodoro.com"
+    SMTP_HOST: str = "0.0.0.0"
+    SMTP_PORT: int = 1025
     SMTP_PASSWORD: str = ""
 
     @property

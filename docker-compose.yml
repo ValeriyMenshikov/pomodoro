@@ -3,6 +3,7 @@ version: '3.9'
 services:
 
   db:
+    container_name: 'postgres'
     image: postgres:16.2
     restart: always
     shm_size: 128mb
@@ -14,7 +15,31 @@ services:
       POSTGRES_DB: pomodoro
 
   cache:
+    container_name: 'redis'
     image: redis:7.2.4-alpine
     restart: always
     ports:
       - '6379:6379'
+
+  rabbitmq:
+    container_name: 'rabbit'
+    image: rabbitmq:3-management
+    restart: always
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+
+#  celery:
+#    container_name: 'celery'
+#    build: .
+#    command: celery -A worker.celer worker --loglevel=info
+#    depends_on:
+#      - rabbitmq
+
+
+  mailhog:
+    container_name: 'mailhog'
+    image: 'mailhog/mailhog'
+    ports:
+      - '1025:1025'
+      - '5025:8025'
