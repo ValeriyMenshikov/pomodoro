@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     MAIL_FROM: str = "no-reply@fitra.live"
     SMTP_HOST: str = "smtp.yandex.run"
     SMTP_PORT: int = 465
-    SMTP_PASSWORD: str = "V6-+!_@R.?HPaxY"
+    SMTP_PASSWORD: str = ""
 
     @property
     def db_url(self):
