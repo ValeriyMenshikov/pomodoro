@@ -52,25 +52,41 @@ async def get_task_service(
     return TaskService(task_repository=task_repository, task_cache=cache_repository)
 
 
-async def get_google_client() -> GoogleClient:
-    return GoogleClient(settings=Settings())
+async def get_settings() -> Settings:
+    return Settings()
 
 
-async def get_yandex_client() -> YandexClient:
-    return YandexClient(settings=Settings())
+async def get_google_client(
+        settings: Annotated[Settings, Depends(get_settings)]
+) -> GoogleClient:
+    return GoogleClient(settings=settings)
+
+
+async def get_yandex_client(
+        settings: Annotated[Settings, Depends(get_settings)]
+) -> YandexClient:
+    return YandexClient(settings=settings)
+
+
+async def get_mail_client(
+        settings: Annotated[Settings, Depends(get_settings)]
+) -> MailClient:
+    return MailClient(settings=settings)
 
 
 async def get_auth_service(
         user_repository: Annotated[UserRepository, Depends(get_repository(UserRepository))],
         google_client: Annotated[GoogleClient, Depends(get_google_client)],
         yandex_client: Annotated[YandexClient, Depends(get_yandex_client)],
+        mail_client: Annotated[MailClient, Depends(get_mail_client)],
+        settings: Annotated[Settings, Depends(get_settings)]
 ) -> AuthService:
     return AuthService(
         user_repository=user_repository,
         google_client=google_client,
         yandex_client=yandex_client,
-        mail_client=MailClient(),
-        settings=Settings(),
+        mail_client=mail_client,
+        settings=settings,
     )
 
 

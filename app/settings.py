@@ -22,10 +22,7 @@ class Settings(BaseSettings):
     YANDEX_REDIRECT_URI: str = ""
     YANDEX_TOKEN_URL: str = "https://oauth.yandex.ru/token"
     CELERY_REDIS_URL: str = "redis://localhost:6379/1"
-    MAIL_FROM: str = "no-reply@fitra.live"
-    SMTP_HOST: str = "smtp.yandex.run"
-    SMTP_PORT: int = 465
-    SMTP_PASSWORD: str = ""
+    RABBIT_URL: str = 'amqp://guest:guest@localhost:5672//'
 
     @property
     def db_url(self):
