@@ -1,7 +1,13 @@
 .DEFAULT_GOAL := help
 
-run: ## Run the application using uvicorn with provided arguments or defaults
+run:
 	uvicorn app.main:app --host 0.0.0.0 --port 8081 --reload --env-file .local.env
+
+celery: ## Run the application using celery with provided arguments or defaults
+	celery -A worker.celery worker --loglevel=info
+
+celery-flower:
+	celery --broker=amqp://guest:guest@localhost:5672// flower --port=5555
 
 grun: ## Run the application using uvicorn with provided arguments or defaults
 	gunicorn app.main:app -c gunicorn.conf.py
@@ -11,6 +17,7 @@ migrate-create:
 
 migrate-apply:
 	alembic upgrade head
+
 
 help: ## Show this help message
 	@echo "Usage: make [command]"
