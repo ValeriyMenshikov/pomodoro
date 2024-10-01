@@ -64,11 +64,11 @@ class AuthService:
         expire_date_unix = (dt.datetime.utcnow() + timedelta(days=7)).timestamp()
         token = jwt.encode(
             claims={
-                'user_id': user_id,
-                'expire': expire_date_unix,
+                "user_id": user_id,
+                "expire": expire_date_unix,
             },
             key=self.settings.JWT_SECRET,
-            algorithm=self.settings.JWT_ENCODING_ALGORITHM
+            algorithm=self.settings.JWT_ENCODING_ALGORITHM,
         )
         return token
 
@@ -77,14 +77,14 @@ class AuthService:
             payload = jwt.decode(
                 token=access_token,
                 key=self.settings.JWT_SECRET,
-                algorithms=self.settings.JWT_ENCODING_ALGORITHM
+                algorithms=self.settings.JWT_ENCODING_ALGORITHM,
             )
         except jwt.JWTError:
             raise TokenNotCorrect
 
-        if payload['expire'] < dt.datetime.utcnow().timestamp():
+        if payload["expire"] < dt.datetime.utcnow().timestamp():
             raise TokenExpired
-        return payload['user_id']
+        return payload["user_id"]
 
     async def get_google_redirect_url(self) -> str:
         return self.settings.google_redirect_url
@@ -94,7 +94,9 @@ class AuthService:
 
     async def yandex_auth(self, code: str) -> UserLoginSchema:
         user_data = await self.yandex_client.get_user_info(code=code)
-        user = await self.user_repository.get_user_by_email(email=user_data.default_email)
+        user = await self.user_repository.get_user_by_email(
+            email=user_data.default_email
+        )
         if user:
             access_token = await self.generate_access_token(user_id=user.id)
             return UserLoginSchema(user_id=user.id, access_token=access_token)

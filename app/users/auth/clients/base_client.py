@@ -1,4 +1,3 @@
-
 from httpx import (
     AsyncClient,
 )
@@ -38,7 +37,9 @@ class BaseClient:
         log = self.log.bind(event_id=str(uuid.uuid4()))
 
         if self.disable_log:
-            rest_response = await self.session.request(method=method, url=path, **kwargs)
+            rest_response = await self.session.request(
+                method=method, url=path, **kwargs
+            )
             rest_response.raise_for_status()
             return rest_response
 

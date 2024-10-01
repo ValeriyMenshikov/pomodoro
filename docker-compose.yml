@@ -1,6 +1,18 @@
 version: '3.9'
 
 services:
+  app:
+    container_name: 'pomodoro'
+    build: .
+#    command: celery -A worker.celer worker --loglevel=info
+    ports:
+      - '8081:8081'
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - cache
+      - rabbitmq
 
   db:
     container_name: 'postgres'

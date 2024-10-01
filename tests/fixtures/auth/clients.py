@@ -3,7 +3,6 @@ import dataclasses
 import pytest
 from faker import Faker as FakerFactory
 from app.settings import Settings
-from app.users.auth.clients import GoogleClient
 from app.users.auth.clients.base_client import BaseClient
 from app.users.auth.clients.configuration import Configuration
 from app.users.auth.schema import GoogleUserData
@@ -40,7 +39,7 @@ class FakeYandexClient:
 def google_client() -> FakeGoogleClient:
     return FakeGoogleClient(
         settings=Settings(),
-        client=BaseClient(configuration=Configuration(host='', disable_log=False)),
+        client=BaseClient(configuration=Configuration(host="", disable_log=False)),
     )
 
 
@@ -48,7 +47,7 @@ def google_client() -> FakeGoogleClient:
 def yandex_client() -> FakeYandexClient:
     return FakeYandexClient(
         settings=Settings(),
-        client=BaseClient(configuration=Configuration(host='', disable_log=False)),
+        client=BaseClient(configuration=Configuration(host="", disable_log=False)),
     )
 
 
@@ -59,5 +58,5 @@ def google_user_info_data() -> GoogleUserData:
         email=faker.email(),
         name=faker.name(),
         verified_email=True,
-        google_access_token=faker.sha256()
+        google_access_token=faker.sha256(),
     )

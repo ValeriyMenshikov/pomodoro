@@ -2,7 +2,6 @@ from typing import Annotated
 import redis
 from fastapi import (
     Depends,
-    Request,
     security,
     Security,
     HTTPException,
@@ -40,14 +39,14 @@ from app.settings import Settings
 
 
 async def task_cache_repository(
-        redis_session: Annotated[redis.Redis, Depends(get_redis_connection)]
+    redis_session: Annotated[redis.Redis, Depends(get_redis_connection)]
 ) -> TaskCache:
     return TaskCache(redis=redis_session)
 
 
 async def get_task_service(
-        task_repository: Annotated[TaskRepository, Depends(get_repository(TaskRepository))],
-        cache_repository: Annotated[TaskCache, Depends(task_cache_repository)],
+    task_repository: Annotated[TaskRepository, Depends(get_repository(TaskRepository))],
+    cache_repository: Annotated[TaskCache, Depends(task_cache_repository)],
 ) -> TaskService:
     return TaskService(task_repository=task_repository, task_cache=cache_repository)
 
@@ -57,29 +56,29 @@ async def get_settings() -> Settings:
 
 
 async def get_google_client(
-        settings: Annotated[Settings, Depends(get_settings)]
+    settings: Annotated[Settings, Depends(get_settings)]
 ) -> GoogleClient:
     return GoogleClient(settings=settings)
 
 
 async def get_yandex_client(
-        settings: Annotated[Settings, Depends(get_settings)]
+    settings: Annotated[Settings, Depends(get_settings)]
 ) -> YandexClient:
     return YandexClient(settings=settings)
 
 
 async def get_mail_client(
-        settings: Annotated[Settings, Depends(get_settings)]
+    settings: Annotated[Settings, Depends(get_settings)]
 ) -> MailClient:
     return MailClient(settings=settings)
 
 
 async def get_auth_service(
-        user_repository: Annotated[UserRepository, Depends(get_repository(UserRepository))],
-        google_client: Annotated[GoogleClient, Depends(get_google_client)],
-        yandex_client: Annotated[YandexClient, Depends(get_yandex_client)],
-        mail_client: Annotated[MailClient, Depends(get_mail_client)],
-        settings: Annotated[Settings, Depends(get_settings)]
+    user_repository: Annotated[UserRepository, Depends(get_repository(UserRepository))],
+    google_client: Annotated[GoogleClient, Depends(get_google_client)],
+    yandex_client: Annotated[YandexClient, Depends(get_yandex_client)],
+    mail_client: Annotated[MailClient, Depends(get_mail_client)],
+    settings: Annotated[Settings, Depends(get_settings)],
 ) -> AuthService:
     return AuthService(
         user_repository=user_repository,
@@ -91,21 +90,20 @@ async def get_auth_service(
 
 
 async def get_user_service(
-        user_repository: Annotated[UserRepository, Depends(get_repository(UserRepository))],
-        auth_service: Annotated[AuthService, Depends(get_auth_service)]
+    user_repository: Annotated[UserRepository, Depends(get_repository(UserRepository))],
+    auth_service: Annotated[AuthService, Depends(get_auth_service)],
 ) -> UserService:
-    return UserService(
-        user_repository=user_repository,
-        auth_service=auth_service
-    )
+    return UserService(user_repository=user_repository, auth_service=auth_service)
 
 
 reusable_oauth2 = security.HTTPBearer()
 
 
 async def get_request_user_id(
-        auth_service: Annotated[AuthService, Depends(get_auth_service)],
-        token: Annotated[security.http.HTTPAuthorizationCredentials, Security(reusable_oauth2)],
+    auth_service: Annotated[AuthService, Depends(get_auth_service)],
+    token: Annotated[
+        security.http.HTTPAuthorizationCredentials, Security(reusable_oauth2)
+    ],
 ) -> int:
     try:
         user_id = await auth_service.get_user_id_from_access_token(token.credentials)

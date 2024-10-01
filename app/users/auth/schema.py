@@ -12,7 +12,7 @@ class GoogleUserData(BaseModel):
 class YandexUserData(BaseModel):
     id: str
     login: str
-    name: str = Field(None, alias='real_name')
+    name: str = Field(None, alias="real_name")
     default_email: str
     access_token: str
 
