@@ -1,5 +1,6 @@
 from typing import Annotated
 import redis
+from aiokafka import AIOKafkaProducer
 from fastapi import (
     Depends,
     Request,
@@ -8,6 +9,7 @@ from fastapi import (
     HTTPException,
 )
 
+from app.broker.producer import BrokerProducer
 from app.users.auth.clients import GoogleClient, YandexClient
 from app.exception import (
     TokenExpired,
@@ -39,6 +41,21 @@ __all__ = [
 from app.settings import Settings
 
 
+async def get_settings() -> Settings:
+    return Settings()
+
+
+async def get_broker_producer(
+        settings: Annotated[Settings, Depends(get_settings)]
+) -> BrokerProducer:
+    return BrokerProducer(
+        producer=AIOKafkaProducer(
+            bootstrap_servers=settings.KAFKA_URL,
+        ),
+        topic=settings.KAFKA_TOPIC
+    )
+
+
 async def task_cache_repository(
         redis_session: Annotated[redis.Redis, Depends(get_redis_connection)]
 ) -> TaskCache:
@@ -50,10 +67,6 @@ async def get_task_service(
         cache_repository: Annotated[TaskCache, Depends(task_cache_repository)],
 ) -> TaskService:
     return TaskService(task_repository=task_repository, task_cache=cache_repository)
-
-
-async def get_settings() -> Settings:
-    return Settings()
 
 
 async def get_google_client(
@@ -69,9 +82,13 @@ async def get_yandex_client(
 
 
 async def get_mail_client(
-        settings: Annotated[Settings, Depends(get_settings)]
+        settings: Annotated[Settings, Depends(get_settings)],
+        broker_producer: Annotated[BrokerProducer, Depends(get_broker_producer)],
 ) -> MailClient:
-    return MailClient(settings=settings)
+    return MailClient(
+        settings=settings,
+        broker_producer=broker_producer
+    )
 
 
 async def get_auth_service(

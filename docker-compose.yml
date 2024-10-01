@@ -21,21 +21,59 @@ services:
     ports:
       - '6379:6379'
 
-  rabbitmq:
-    container_name: 'rabbit'
-    image: rabbitmq:3-management
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
     restart: always
+    environment:
+      ZOOKEEPER_CLIENT_PORT: "2181"
+      ZOOKEEPER_TICK_TIME: "2000"
+      ALLOW_ANONYMOUS_LOGIN: "yes"
     ports:
-      - '5672:5672'
-      - '15672:15672'
+      - "2181:2181"
 
-#  celery:
-#    container_name: 'celery'
-#    build: .
-#    command: celery -A worker.celer worker --loglevel=info
-#    depends_on:
-#      - rabbitmq
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    restart: always
+    depends_on:
+      - zookeeper
+    ports:
+      - "19092:19092"
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      KAFKA_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:19092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:19092
+      KAFKA_BROKER_ID: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_LOG_RETENTION_HOURS: 168
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
 
+  schemaregistry:
+    platform: linux/amd64
+    image: confluentinc/cp-schema-registry:latest
+    depends_on:
+      - kafka
+    ports:
+      - "8085:8085"
+    environment:
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "kafka:9092"
+      SCHEMA_REGISTRY_HOST_NAME: "schemaregistry"
+      SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8085"
+
+  kafdrop:
+    platform: linux/amd64
+    image: obsidiandynamics/kafdrop:latest
+    restart: always
+    depends_on:
+      - kafka
+    ports:
+      - "9000:9000"
+    environment:
+      KAFKA_BROKERCONNECT: "kafka:9092"
+      JVM_OPTS: "-Xms32M -Xmx64M"
 
   mailhog:
     container_name: 'mailhog'
@@ -43,3 +81,19 @@ services:
     ports:
       - '1025:1025'
       - '5025:8025'
+
+
+#  rabbitmq:
+#    container_name: 'rabbit'
+#    image: rabbitmq:3-management
+#    restart: always
+#    ports:
+#      - '5672:5672'
+#      - '15672:15672'
+
+#  celery:
+#    container_name: 'celery'
+#    build: .
+#    command: celery -A worker.celer worker --loglevel=info
+#    depends_on:
+#      - rabbitmq

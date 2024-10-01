@@ -12,7 +12,7 @@ from app.users.user_profile.handlers import router as user_profile_router
 async def lifespan(
         app: FastAPI,
 ):
-    await make_amqp_consumer()
+    # await make_amqp_consumer()
     yield
 
 
