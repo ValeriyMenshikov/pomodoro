@@ -24,6 +24,7 @@ class Settings(BaseSettings):
     CELERY_REDIS_URL: str = "redis://redis:6379/1"
     RABBIT_URL: str = "amqp://guest:guest@rabbit:5672//"
 
+
     @property
     def db_url(self):
         return f"{self.DB_DRIVER}://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
