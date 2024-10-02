@@ -21,4 +21,3 @@ class UserProfileFactory(factory.Factory):
     name = factory.LazyFunction(lambda: faker.name())
     yandex_access_token = factory.LazyFunction(lambda: faker.sha256())
     google_access_token = factory.LazyFunction(lambda: faker.sha256())
-

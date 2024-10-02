@@ -15,22 +15,22 @@ class UserRepository(BaseRepository):
         #     username=user_data.username,
         #     password=user_data.google_access_token,
         # ).returning(UserProfile)
-        query = insert(UserProfile).values(**user_data.model_dump(exclude_none=True)).returning(UserProfile)
+        query = (
+            insert(UserProfile)
+            .values(**user_data.model_dump(exclude_none=True))
+            .returning(UserProfile)
+        )
 
         result = await self.execute(query)
         return result.scalar_one_or_none()
 
     async def get_user(self, user_id: int) -> UserProfile | None:
-        query = select(UserProfile).where(
-            UserProfile.id == user_id
-        )
+        query = select(UserProfile).where(UserProfile.id == user_id)
         result = await self.execute(query)
         return result.scalar_one_or_none()
 
     async def get_user_by_username(self, user_name: str) -> UserProfile | None:
-        query = select(UserProfile).where(
-            UserProfile.username == user_name
-        )
+        query = select(UserProfile).where(UserProfile.username == user_name)
         result = await self.execute(query)
         return result.scalar_one_or_none()
 

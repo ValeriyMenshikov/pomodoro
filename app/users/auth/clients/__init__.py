@@ -3,6 +3,6 @@ from app.users.auth.clients.yandex import YandexClient
 
 
 __all__ = [
-    'GoogleClient',
-    'YandexClient',
+    "GoogleClient",
+    "YandexClient",
 ]

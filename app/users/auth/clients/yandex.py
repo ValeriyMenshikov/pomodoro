@@ -20,12 +20,15 @@ structlog.configure(
 @dataclass
 class YandexClient:
     settings: Settings
-    client: BaseClient = BaseClient(configuration=Configuration(host='', disable_log=False))
+    client: BaseClient = BaseClient(
+        configuration=Configuration(host="", disable_log=False)
+    )
 
     async def get_user_info(self, code: str):
         access_token = await self._get_access_token(code=code)
         user_info = await self.client.get(
-            "https://login.yandex.ru/info?format=json", headers={"Authorization": f"OAuth {access_token}"}
+            "https://login.yandex.ru/info?format=json",
+            headers={"Authorization": f"OAuth {access_token}"},
         )
         return YandexUserData(**user_info.json(), access_token=access_token)
 

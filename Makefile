@@ -19,6 +19,13 @@ migrate-apply:
 	alembic upgrade head
 
 
+docker:
+	docker compose -f docker-compose.yml up -d --remove-orphans --build
+
+lint:
+	poetry run ruff check app --fix
+	poetry run black app
+
 help: ## Show this help message
 	@echo "Usage: make [command]"
 	@echo ""

@@ -25,6 +25,11 @@ pytest-asyncio = "^0.24.0"
 pytest-factoryboy = "^2.7.0"
 celery = "^5.4.0"
 flower = "^2.0.1"
+aio-pika = "^9.4.3"
+black = "^24.8.0"
+ruff = "^0.6.8"
+structlog = "^24.4.0"
+curlify2 = "^2.0.0"
 
 
 [build-system]

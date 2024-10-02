@@ -1,6 +1,15 @@
 version: '3.9'
 
 services:
+  app:
+    container_name: 'pomodoro'
+    build: .
+    ports:
+      - '8081:8081'
+    depends_on:
+      - db
+      - cache
+      - rabbitmq
 
   db:
     container_name: 'postgres'

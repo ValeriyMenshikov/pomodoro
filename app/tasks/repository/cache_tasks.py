@@ -13,10 +13,16 @@ class TaskCache:
     async def get_tasks(self) -> TasksSchema:
         async with self.redis as redis:
             tasks_json = await redis.lrange("tasks", 0, -1)
-            return TasksSchema(tasks=[TaskSchema.model_validate(json.loads(task)) for task in tasks_json])
+            return TasksSchema(
+                tasks=[
+                    TaskSchema.model_validate(json.loads(task)) for task in tasks_json
+                ]
+            )
 
     async def set_tasks(self, tasks: TasksSchema) -> None:
         tasks_json = [task.json() for task in tasks.tasks]
         async with self.redis as redis:
             for task_json in tasks_json:
-                await redis.pipeline().lpush("tasks", task_json).expire("tasks", 20).execute()
+                await redis.pipeline().lpush("tasks", task_json).expire(
+                    "tasks", 20
+                ).execute()
