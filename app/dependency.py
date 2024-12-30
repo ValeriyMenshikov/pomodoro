@@ -50,9 +50,9 @@ async def get_broker_producer(
 ) -> BrokerProducer:
     return BrokerProducer(
         producer=AIOKafkaProducer(
-            bootstrap_servers=settings.KAFKA_URL,
+            bootstrap_servers=[settings.KAFKA_URL],
         ),
-        topic=settings.KAFKA_TOPIC
+        topic=settings.KAFKA_TOPIC,
     )
 
 

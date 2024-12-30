@@ -1,8 +1,16 @@
 version: '3.9'
 
+
+networks:
+  kafka-net:
+    driver: bridge
+
+
 services:
 
   db:
+    networks:
+      - kafka-net
     container_name: 'postgres'
     image: postgres:16.2
     restart: always
@@ -15,73 +23,155 @@ services:
       POSTGRES_DB: pomodoro
 
   cache:
+    networks:
+      - kafka-net
     container_name: 'redis'
     image: redis:7.2.4-alpine
     restart: always
     ports:
       - '6379:6379'
 
+  #  zookeeper:
+  #    platform: linux/x86_64
+  #    image: confluentinc/cp-zookeeper:7.3.2
+  #    hostname: zoo1
+  #    container_name: zoo1
+  #    ports:
+  #      - "2181:2181"
+  #    environment:
+  #      ZOOKEEPER_CLIENT_PORT: 2181
+  #      ZOOKEEPER_SERVER_ID: 1
+  #      ZOOKEEPER_SERVERS: zoo1:2888:3888
+  #
+  #  kafka:
+  #    platform: linux/x86_64
+  #    image: confluentinc/cp-kafka:7.3.2
+  #    hostname: kafka1
+  #    container_name: kafka1
+  #    ports:
+  #      - "9092:9092"
+  #      - "29092:29092"
+  #      - "9999:9999"
+  #    environment:
+  #      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:19092,EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9092,DOCKER://host.docker.internal:29092
+  #      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,DOCKER:PLAINTEXT
+  #      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+  #      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+  #      KAFKA_BROKER_ID: 1
+  #      KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
+  #      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+  #      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+  #      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+  #      KAFKA_JMX_PORT: 9999
+  #      KAFKA_JMX_HOSTNAME: ${DOCKER_HOST_IP:-127.0.0.1}
+  #      KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.authorizer.AclAuthorizer
+  #      KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "true"
+  #    depends_on:
+  #      - zookeeper
+  #
+  #  schemaregistry:
+  #    platform: linux/x86_64
+  #    image: pravega/schemaregistry
+  #    restart: always
+  #    depends_on:
+  #      - zookeeper
+  #    environment:
+  #      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper:2181"
+  #      SCHEMA_REGISTRY_HOST_NAME: schemaregistry
+  #      SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8085"
+  #    ports:
+  #      - 18085:8085
+  #
+  #  kafdrop:
+  #    platform: linux/x86_64
+  #    image: obsidiandynamics/kafdrop:3.31.0-SNAPSHOT
+  #    depends_on:
+  #      - kafka
+  #      - schemaregistry
+  #    ports:
+  #      - 19000:9000
+  #    environment:
+  #      KAFKA_BROKERCONNECT: kafka:9092
+  #      CMD_ARGS: "--message.format=AVRO --message.keyFormat=DEFAULT --schemaregistry.connect=http://schemaregistry:8085"
+
   zookeeper:
-    image: confluentinc/cp-zookeeper:latest
-    restart: always
-    environment:
-      ZOOKEEPER_CLIENT_PORT: "2181"
-      ZOOKEEPER_TICK_TIME: "2000"
-      ALLOW_ANONYMOUS_LOGIN: "yes"
+    networks:
+      - kafka-net
+    platform: linux/x86_64
+    image: confluentinc/cp-zookeeper:7.3.2
+    hostname: zoo1
+    container_name: zoo1
     ports:
       - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_SERVERS: zoo1:2888:3888
 
   kafka:
-    image: confluentinc/cp-kafka:latest
-    restart: always
-    depends_on:
-      - zookeeper
+    networks:
+      - kafka-net
+    platform: linux/x86_64
+    image: confluentinc/cp-kafka:7.3.2
+    hostname: kafka1
+    container_name: kafka1
     ports:
-      - "19092:19092"
+      - "9092:9092" # Порт для клиентов
+      - "19092:19092" # Порт для внутренних брокеров
     environment:
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:19092,EXTERNAL://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
-      KAFKA_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:19092
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:19092
       KAFKA_BROKER_ID: 1
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-      KAFKA_LOG_RETENTION_HOURS: 168
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
+      KAFKA_JMX_PORT: 9999
+      KAFKA_JMX_HOSTNAME: localhost
+      KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.authorizer.AclAuthorizer
+      KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "true"
+    depends_on:
+      - zookeeper
 
-  schemaregistry:
-    platform: linux/amd64
-    image: confluentinc/cp-schema-registry:latest
+  akhq:
+    networks:
+      - kafka-net
+    platform: linux/x86_64
+    image: tchiotludo/akhq
+    container_name: akhq
+    ports:
+      - "8082:8080" # Порт для доступа к интерфейсу
+    environment:
+      AKHQ_CONFIGURATION: |
+        akhq:
+          connections:
+            kafka-cluster:
+              properties:
+                bootstrap.servers: "kafka:19092"
+                security.protocol: PLAINTEXT
     depends_on:
       - kafka
-    ports:
-      - "8085:8085"
-    environment:
-      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "kafka:9092"
-      SCHEMA_REGISTRY_HOST_NAME: "schemaregistry"
-      SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8085"
-
-  kafdrop:
-    platform: linux/amd64
-    image: obsidiandynamics/kafdrop:latest
-    restart: always
-    depends_on:
-      - kafka
-    ports:
-      - "9000:9000"
-    environment:
-      KAFKA_BROKERCONNECT: "kafka:9092"
-      JVM_OPTS: "-Xms32M -Xmx64M"
 
   mailhog:
+    networks:
+      - kafka-net
     container_name: 'mailhog'
     image: 'mailhog/mailhog'
     ports:
       - '1025:1025'
       - '5025:8025'
 
+#networks:
+#  kafka-net:
+#    driver: bridge
+
+volumes:
+  zookeeper_data:
+    driver: local
+  kafka_data:
+    driver: local
 
 #  rabbitmq:
 #    container_name: 'rabbit'

@@ -27,6 +27,8 @@ celery = "^5.4.0"
 flower = "^2.0.1"
 aio-pika = "^9.4.3"
 aiokafka = "^0.11.0"
+structlog = "^24.4.0"
+curlify2 = "^2.0.0"
 
 
 [build-system]

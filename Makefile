@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := help
 
 run:
-	uvicorn app.main:app --host 0.0.0.0 --port 8081 --reload --env-file .local.env
+	uvicorn app.main:app --host 0.0.0.0 --port 8085 --reload --env-file .local.env
 
 celery: ## Run the application using celery with provided arguments or defaults
 	celery -A worker.celery worker --loglevel=info
